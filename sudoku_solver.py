@@ -1,15 +1,18 @@
 from typing import List, Optional
 
 from constraints.constraint import Constraint
+from constraints.local.all_different_constraint import AllDifferentConstraint
 from structure.board import Board
 from structure.domain_grid import DomainGrid
 
 
 class SudokuSolver:
-    def __init__(self, board: Board, constraints: List[Constraint]):
+    def __init__(self, board: Board, constraints: List[Constraint], enable_normal_sudoku_rules: bool = True):
         self._size: int = board.size
         self._domain = DomainGrid(board)
         self._constraints: List[Constraint] = constraints
+        if enable_normal_sudoku_rules:
+            self._add_normal_sudoku_constraints()
 
     def solve(self) -> Optional[Board]:
         if not self.propagate_all():
@@ -38,3 +41,19 @@ class SudokuSolver:
             if self._domain.any_empty():
                 return False
         return True
+
+    def _add_normal_sudoku_constraints(self) -> None:
+        if self._size != 9:
+            return
+        # Add row constraints
+        for r in range(self._size):
+            self._constraints.append(AllDifferentConstraint([(r, c) for c in range(self._size)]))
+        # Add column constraints
+        for c in range(self._size):
+            self._constraints.append(AllDifferentConstraint([(r, c) for r in range(self._size)]))
+        # Add box constraints (assuming 3x3 boxes for standard Sudoku)
+        box_size = int(self._size ** 0.5)
+        for box_r in range(box_size):
+            for box_c in range(box_size):
+                cells = [(box_r * box_size + r, box_c * box_size + c) for r in range(box_size) for c in range(box_size)]
+                self._constraints.append(AllDifferentConstraint(cells))

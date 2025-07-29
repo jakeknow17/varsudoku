@@ -10,7 +10,7 @@ class Board:
                 raise ValueError("All rows must have the same length as the board size.")
             for value_idx, value in enumerate(row):
                 if not (0 <= value <= self._size):
-                    raise ValueError(f"Cell values must be between 0 and {size}.")
+                    raise ValueError(f"Cell values must be between 0 and {self._size}.")
                 self._cells[row_idx][value_idx] = value
 
     @property
@@ -18,12 +18,12 @@ class Board:
         return self._size
 
     def get_cell(self, x: int, y: int):
-        if 0 <= x < self.size and 0 <= y < self.size:
+        if 0 <= x < self._size and 0 <= y < self._size:
             return self._cells[y][x]
         return None
 
     def set_cell(self, x: int, y: int, value):
-        if 0 <= x < self.size and 0 <= y < self.size:
+        if 0 <= x < self._size and 0 <= y < self._size:
             self._cells[y][x] = value
 
     def __str__(self):
