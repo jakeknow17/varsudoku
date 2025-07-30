@@ -11,14 +11,14 @@ class AllDifferentConstraint(Constraint):
 
     def propagate(self, domain_grid: DomainGrid) -> bool:
         changed = False
-        for r, c in self._cells:
-            if len(domain_grid.get(r, c)) == 1:
-                for other_r, other_c in self._cells:
-                    if (r, c) == (other_r, other_c):
+        for cell in self._cells:
+            if len(domain_grid.get(*cell)) == 1:
+                for other in self._cells:
+                    if cell == other:
                         continue
-                    singleton_val: int = next(iter(domain_grid.get(r, c)))
-                    other_len: int = len(domain_grid.get(other_r, other_c))
-                    domain_grid.set(other_r, other_c, domain_grid.get(other_r, other_c) - {singleton_val})
+                    singleton_val: int = next(iter(domain_grid.get(*cell)))
+                    other_len: int = len(domain_grid.get(*other))
+                    domain_grid.set(other[0], other[1], domain_grid.get(*other) - {singleton_val})
                     # If the size of the set changed, we mark it as changed
-                    changed = changed or len(domain_grid.get(other_r, other_c)) < other_len
+                    changed = changed or len(domain_grid.get(*other)) < other_len
         return changed
